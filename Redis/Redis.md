@@ -22,7 +22,7 @@
 + 高可用、分布式
   + Redis-Sentinel（v2.8）支持高可用
   + Redis-CLuster（v3.0）支持分布式
-+ 典型应用场景
++ 典型应用场景
   + 缓存系统
   + 计数器
   + 消息队列系统
@@ -40,24 +40,24 @@
   + 建一个软连接（可选）：`ln -s redis-3.2.12 redis`
   + 进入 redis 目录：`cd redis`
   + 编译（会在 redis/src 目录下生成可执行文件）：`make`
-  + 安装（会将 redis/src 目录下的可执行文件拷贝到 /user/local/bin 中）：`sudo make install`
+  + 安装（会将 redis/src 目录下的可执行文件拷贝到 /user/local/bin 中）：`sudo make install`
 + 注意事项：
-  + 通过 `echo $PATH` 命令，可以发现 `/usr/local/bin` 在环境变量中，因此执行完 `make install` 命令后，可以在任意目录下直接运行类似 `redis-server` 等可执行文件
+  + 通过 `echo $PATH` 命令，可以发现 `/usr/local/bin` 在环境变量中，因此执行完 `make install` 命令后，可以在任意目录下直接运行类似 `redis-server` 等可执行文件
   + 执行 `make isntall` 命令，需要 root 权限，这是因为 `/usr/local/bin` 目录只有 root 用户才拥有写权限，而拷贝文件到目录中，需要拥有对目录的写权限
   + 具体细节可以参看 `redis/src/Makefile`
 
 ### 1.2 Redis 可执行文件说明
 
-安装完毕后，可以在 `reids/src` 或 `/usr/local/bin` 目录下看到 6 个可执行文件，如下：
+安装完毕后，可以在 `reids/src` 或 `/usr/local/bin` 目录下看到 6 个可执行文件，如下：
 
 + redis-server：Redis 服务器
 + redis-cli：Redis 命令行客户端
 + redis-benchmark：Redis 性能测试工具
 + reids-check-aof：AOF 文件修复工具（断电可能会导致文件损坏）
 + redis-check-dump：RDB 文件修复工具
-+ redis-sentinel：Redis 2.8 以后，提供了高可用版本，即 Sentinel 服务器
++ redis-sentinel：Redis 2.8 以后，提供了高可用版本，即 Sentinel 服务器
 
-### 1.3 Redis 三种启动方法  
+### 1.3 Redis 三种启动方法  
 
 + 最简启动
 + 动态参数启动
