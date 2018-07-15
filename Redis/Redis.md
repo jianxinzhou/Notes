@@ -318,6 +318,89 @@ localhost:6379> get hello
 
 <img src="image/字符串总结.jpg" width=360px/>
 
+### 2.3 哈希键值结构
+
+<img src="image/哈希键值结构.jpg" width=360px/>
+
+在哈希中可以为 key 直接添加一个新的值（field-value），这一点区别于字符串键值结构。
+
+如果存储在字符串键值结构中，通常会将上述图中的用户信息封装成一个对象（无论使用什么语言），然后序列化成字符串的 value，存入 Redis 中；
+如果需要添加属性的话，需要将 key 对应的 value 拿出来，然后反序列化成对象，添加完属性后，继续序列化成字符串的 value，存入 Redis 中。
+
+<img src="image/哈希和表.jpg" width=360px/>
+
+如上图所示，可以将 Redis 的「哈希键值结构」与关系数据库中的「表」联系起来，每个 key 连同其 value 相当于表中的一行，key 相当于 ID，
+将 value 中的每个属性平铺开来，类似于表中的字段。区别在于「哈希键值结构」比较松散，比如，users:1 有 email 属性，而 users:2 可以没有这个属性。
+
+#### 2.3.1 特点
+
++ Mapmap？
+  + 大的 Map 是 key-value，而 value 中又包含了 field-value
++ Small redis
++ field 不能相同，value可以相同
+  + 和 Redis 一样，key 不能相同，而 value 可以相同
+
+#### 2.3.2 API
+
++ 所有哈希的命令均以 H 开头
++ hget/hset/hdel
+  + hget key field：获取 hash key 对应的 field 的 value，o(1)
+  + hset key field value：设置 hash key 对应 field 的 value，o(1)
+  + hdel key field：删除 hash key 对应 field 的 value，o(1)
++ hexists/hlen
+  + hexists key field：判断 hash key 是否有 field，o(1)
+  + hlen key：获取 hash key field 的数量，o(1)
++ hmget/hmset
+  + hmget key field1 field2...fieldN：批量获取 hash key 的一批 field 对应的值，o(n)
+  + hmset key field1 value1 field2 value2...fieldN valueN：批量设置 hash key 的一批 field value，o(n) 
+
+#### 2.3.2 例子
+
++ hget/hset/hdel
+
+```bash
+127.0.0.1:6379> hset user:1:info age 23
+(integer) 1
+127.0.0.1:6379> hget user:1:info age
+"23"
+127.0.0.1:6379> hset user:1:info name ronaldo
+(integer) 1
+127.0.0.1:6379> hgetall user:1:info             # 获取所有属性的 field-value 值
+1) "age"
+2) "23"
+3) "name"
+4) "ronaldo"
+127.0.0.1:6379> hdel user:1:info age
+(integer) 1
+127.0.0.1:6379> hgetall user:1:info
+1) "name"
+2) "ronaldo"
+```
+
++ hexists/hlen
+
+```bash
+127.0.0.1:6379> hgetall user:1:info
+1) "name"
+2) "ronaldo"
+127.0.0.1:6379> hexists user:1:info name
+(integer) 1
+127.0.0.1:6379> hlen user:1:info
+(integer) 1
+```
+
++ hmget/hmset
+
+```bash
+127.0.0.1:6379> hmset user:2:info age 30 name kaka page 50
+OK
+127.0.0.1:6379> hlen user:2:info
+(integer) 3
+127.0.0.1:6379> hmget user:2:info age name
+1) "30"
+2) "kaka"
+```
+
 ## 第3章 Redis 客户端的使用
 
 ## 第4章 瑞士军刀 Redis 其他功能
