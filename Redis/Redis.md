@@ -344,17 +344,25 @@ localhost:6379> get hello
 
 + 所有哈希的命令均以 H 开头
 + hget/hset/hdel
-  + hget key field：获取 hash key 对应的 field 的 value，o(1)
-  + hset key field value：设置 hash key 对应 field 的 value，o(1)
-  + hdel key field：删除 hash key 对应 field 的 value，o(1)
+  + hget key field：获取 hash key 对应的 field 的 value，O(1)
+  + hset key field value：设置 hash key 对应 field 的 value，O(1)
+  + hdel key field：删除 hash key 对应 field 的 value，O(1)
 + hexists/hlen
-  + hexists key field：判断 hash key 是否有 field，o(1)
-  + hlen key：获取 hash key field 的数量，o(1)
+  + hexists key field：判断 hash key 是否有 field，O(1)
+  + hlen key：获取 hash key field 的数量，O(1)
 + hmget/hmset
-  + hmget key field1 field2...fieldN：批量获取 hash key 的一批 field 对应的值，o(n)
-  + hmset key field1 value1 field2 value2...fieldN valueN：批量设置 hash key 的一批 field value，o(n) 
+  + hmget key field1 field2...fieldN：批量获取 hash key 的一批 field 对应的值，O(n)
+  + hmset key field1 value1 field2 value2...fieldN valueN：批量设置 hash key 的一批 field value，O(n)
++ hgetall/hvals/hkeys
+  + htetall key：返回 hash key 对应所有的 field 和 value，O(n)
+  + hvals key：返回 hash key 对应所有 field 的 value，O(n)
+  + hkeys key：返回 hash key 对用所有 filed，O(n)
++ hsetnx/hincrby/hincybyfloat
+  + hsetnx key field value：设置 hash key 对应 field 的 value（如果 field 已经存在，则失败），O(1)
+  + hincrby key field intCounter：hash key 对应的 field 的 value 自增 intCounter，O(1)
+  + hincrbyfloat key field floatCounter：hincrby 浮点数版，O(1)
 
-#### 2.3.2 例子
+#### 2.3.3 例子
 
 + hget/hset/hdel
 
@@ -400,6 +408,18 @@ OK
 1) "30"
 2) "kaka"
 ```
+
+#### 2.3.4 实战
+
++ 实现功能：记录网站每个用户个人主页的访问量
+  + 回忆一下在字符串键值结构中是如何实现的？
+    + 定义一个 key，例如 `user:1:pageview:count`
+    + 这样的话，每个用户的个人主页访问量都作为一个 key
+    + 然后使用 `incr` 或者 `incrby` 的方式
+  + 在哈希键值结构中可以使用 `hincrby user:1:info pageview count`
+    + 这样实现的话，是在用户信息这个 key 中，添加了一个 pageview 的属性
+    + 整个 user，仍然是一个完整的整体
+    + 而使用字符串的话，每个 user 的主页访问量都是单独一个 key
 
 ## 第3章 Redis 客户端的使用
 
