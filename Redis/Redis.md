@@ -421,6 +421,68 @@ OK
     + 整个 user，仍然是一个完整的整体
     + 而使用字符串的话，每个 user 的主页访问量都是单独一个 key
 
+### 2.4 列表键值结构
+
++ 列表结构
+
+<img src="image/列表键值结构.jpg" width=360px/>
+
++ 操作 1：LPUSH, LPOP, RPUSH, RPOP
+
+<img src="image/列表操作1.jpg" width=360px/>
+
++ 操作 2：获取列表长度、删除某个元素、获取子列表、按照索引获取列表指定元素
+
+<img src="image/列表操作2.jpg" width=360px/>
+
++ 特点
+  + 有序
+  + 可以重复
+    + 列表元素可以是类似 a-b-a-a-b-a 这样的结构
+  + 左右两边插入弹出
+
+#### 2.4.1 API
+
++ 增：rpush/lpush/linsert
+  + rpush key value1 value2 ... valueN：从列表右端插入值（1-N 个），O(1~n)
+    + 例子：`rpush listkey c b a`，得到 c--b--a
+  + lpush key value1 value2 ... valueN：从列表左端插入值（1-N 个），O(1~n)
+    + 例子：`lpush listkey c b a`，得到 a--b--c
+  + linsert key before|after value newValue：在列表指定的值前|后插入 newValue，O(n)
+    + 例子：假设当前列表是 a--b--c--d，执行 `linsert listkey before b java`，得到 a--java--b--c--d
+    + 参数 value，是指按照从左到右顺序，出现的第一个 value
++ 删：lpop/rpop/lrem/ltrim
+  + lpop key：从列表左侧弹出一个 item，O(1)
+    + 例子：假设当前列表是 a--b--c--d，执行 `lpop listkey`，得到 b--c--d
+  + rpop key：从列表右侧弹出一个 item，O(1)
+    + 例子：假设当前列表是 a--b--c--d，执行 `rpop listkey`，得到 a--b--c
+  + lrem key count value：根据 count 的值，从列表中删除对应与 value 相等的 item，O(n)
+    + count > 0，从左到右，删除最多 count 个与 value 相等的 item
+    + count < 0，从右到左，删除最多 Math.abs(count) 个与 value 相等的 item
+    + count = 0，删除所有与 value 相等的 item
+    + 例子，假设当前列表为是 a--c--a--c--b--f
+      + 执行 `lrem listkey 0 a`，得到 c--c--b--f
+      + 继续执行 `lrem listkey -1 c`，得到 c--b--f（删除了最右边的 c）
+  + ltrim key start end：按照索引范围修剪列表，O(n)
+    + 例子，假设当前列表为 a--b--c--d--e--f，执行 `ltrim listkey 1 4`，得到 b--c--d--e
++ 查：lrange/lindex/llen
+  + lrange key start end（包含 end）：获取列表指定索引范围所有 item，O(n)
+  + lindex key index：获取列表指定索引的 item，O(n)
+  + llen key：获取列表长度，O(1)
++ 改：lset
+  + lset key index newValue：设置列表指定索引值为 newValue，O(n)
++ 不常用命令：blpop/brpop
+  + blpop key timeout：lpop 阻塞版本，timeout 是阻塞超时时间，如果 timeout=0，如果列表中没有元素，会一直等待 
+    + 当我们对一个空的列表执行 lpop 或者 rpop 时，通常会立即返回。如果在某些场景下，我们希望列表一有新的元素就立刻弹出，可以使用阻塞弹出，这在生产者消费者或者消息队列场景下是比较适用的
+  + brpop key timeout：rpop 阻塞版本，timeout 是阻塞超时时间，如果 timeout=0，如果列表中没有原色，会一直等待
++ Tips
+  + LPUSH + LPOP = Stack
+  + LPUSH + RPOP = Queue
+  + LPUSH + LTRIM = Capped Collection （控制列表大小）
+  + LPUSH + BRPOP = Message Queue
+
+### 2.5 集合键值结构
+
 ## 第3章 Redis 客户端的使用
 
 ## 第4章 瑞士军刀 Redis 其他功能
